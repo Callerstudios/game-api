@@ -1,28 +1,49 @@
-﻿using GameApi.Models;
+﻿using GameApi.Data;
+using GameApi.Models;
 using GameApi.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameApi.Repositories.Implementations;
 
 public class PlayerRepository : IPlayerRepository
 {
-    private readonly List<Player> _players = new();
+    private readonly AppDbContext _context;
 
-    public Task<IEnumerable<Player>> GetAllAsync()
+    public PlayerRepository(AppDbContext context)
     {
-        return Task.FromResult(_players.AsEnumerable());
+        _context = context;
     }
 
-    public Task<Player?> GetByIdAsync(Guid id)
+    public async Task<IEnumerable<Player>> GetAllAsync()
     {
-        var player = _players.FirstOrDefault(p => p.Id == id);
-
-        return Task.FromResult(player);
+        return await _context.Players
+            .AsNoTracking()
+            .ToListAsync();
     }
 
-    public Task<Player> AddAsync(Player player)
+    public async Task<Player?> GetByIdAsync(Guid id)
     {
-        _players.Add(player);
+        return await _context.Players.FindAsync(id);
+    }
 
-        return Task.FromResult(player);
+    public async Task<bool> ExistsAsync(string username)
+    {
+        return await _context.Players
+            .AnyAsync(p => p.Username == username);
+    }
+
+    public async Task AddAsync(Player player)
+    {
+        await _context.Players.AddAsync(player);
+    }
+
+    public void Update(Player player)
+    {
+        _context.Players.Update(player);
+    }
+
+    public void Delete(Player player)
+    {
+        _context.Players.Remove(player);
     }
 }

@@ -1,6 +1,10 @@
-﻿namespace GameApi.DTOs.Players;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class CreatePlayerDto
-{
-    public string Username { get; set; } = string.Empty;
-}
+namespace GameApi.DTOs.Players;
+
+public record CreatePlayerDto(
+    [Required]
+    [MinLength(3)]
+    [MaxLength(20)]
+    string Username
+);

@@ -1,7 +1,9 @@
+using GameApi.Data;
 using GameApi.Repositories.Implementations;
 using GameApi.Repositories.Interfaces;
 using GameApi.Services.Implementations;
 using GameApi.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,12 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton<IPlayerRepository, PlayerRepository>();
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlite("Data Source=game.db");
+});
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

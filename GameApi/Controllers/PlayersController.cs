@@ -28,10 +28,21 @@ public class PlayersController : ControllerBase
     {
         var player = await _playerService.CreateAsync(dto);
 
-        //return CreatedAtAction(
-        //    nameof(GetPlayers),
-        //    new { id = player.Id },
-        //    player);
+        return CreatedAtAction(
+            nameof(GetPlayers),
+            new { id = player.Id },
+            player);
+    }
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<PlayerDto>> GetPlayer(Guid id)
+    {
+        var player = await _playerService.GetByIdAsync(id);
+
+        if (player is null)
+        {
+            return NotFound();
+        }
+
         return Ok(player);
     }
 }

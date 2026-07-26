@@ -8,5 +8,11 @@ public interface IPlayerRepository
 
     Task<Player?> GetByIdAsync(Guid id);
 
-    Task<Player> AddAsync(Player player);
+    Task<bool> ExistsAsync(string username);
+
+    Task AddAsync(Player player);
+
+    void Update(Player player);
+
+    void Delete(Player player);
 }

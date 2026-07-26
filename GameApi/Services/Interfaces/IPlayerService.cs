@@ -7,4 +7,6 @@ public interface IPlayerService
     Task<IEnumerable<PlayerDto>> GetAllAsync();
 
     Task<PlayerDto> CreateAsync(CreatePlayerDto dto);
+
+    Task<PlayerDto?> GetByIdAsync(Guid id);
 }
