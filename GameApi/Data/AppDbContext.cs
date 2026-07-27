@@ -11,4 +11,11 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Player> Players => Set<Player>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+    }
 }

@@ -10,6 +10,10 @@ public interface IPlayerRepository
 
     Task<bool> ExistsAsync(string username);
 
+    Task<bool> UsernameExistsAsync(
+    string username,
+    Guid? excludePlayerId = null);
+
     Task AddAsync(Player player);
 
     void Update(Player player);

@@ -32,6 +32,15 @@ public class PlayerRepository : IPlayerRepository
             .AnyAsync(p => p.Username == username);
     }
 
+    public async Task<bool> UsernameExistsAsync(
+    string username,
+    Guid? excludePlayerId = null)
+    {
+        return await _context.Players.AnyAsync(p =>
+            p.Username == username &&
+            (!excludePlayerId.HasValue || p.Id != excludePlayerId));
+    }
+
     public async Task AddAsync(Player player)
     {
         await _context.Players.AddAsync(player);

@@ -45,4 +45,13 @@ public class PlayersController : ControllerBase
 
         return Ok(player);
     }
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<PlayerDto>> Update(
+    Guid id,
+    UpdatePlayerDto dto)
+    {
+        var player = await _playerService.UpdateAsync(id, dto);
+
+        return Ok(player);
+    }
 }
