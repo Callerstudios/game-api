@@ -6,67 +6,91 @@ public class Player
 
     public string Username { get; private set; } = string.Empty;
 
+    public string Email { get; private set; } = string.Empty;
+
+    public string PasswordHash { get; private set; } = string.Empty;
+
     public int Level { get; private set; }
 
     public int Experience { get; private set; }
 
-    private Player()
-    {
-    }
+    public DateTime CreatedAt { get; private set; }
 
-    public Player(string username)
+    public DateTime UpdatedAt { get; private set; }
+
+    private Player() { } // Required by EF Core
+
+    public Player(
+        string username,
+        string email,
+        string passwordHash)
     {
         SetUsername(username);
+        SetEmail(email);
 
-        Id = Guid.NewGuid();
+        PasswordHash = passwordHash;
+
         Level = 1;
         Experience = 0;
-    }
-    private void SetUsername(string username)
-    {
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            throw new ArgumentException(
-                "Username is required.",
-                nameof(username));
-        }
 
-        if (username.Length > 20)
-        {
-            throw new ArgumentException(
-                "Username cannot exceed 20 characters.",
-                nameof(username));
-        }
-
-        Username = username.Trim();
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
     }
+
     public void UpdateUsername(string username)
     {
         SetUsername(username);
+        Touch();
     }
+
+    public void UpdateEmail(string email)
+    {
+        SetEmail(email);
+        Touch();
+    }
+
+    public void UpdatePasswordHash(string passwordHash)
+    {
+        PasswordHash = passwordHash;
+        Touch();
+    }
+
     public void AddExperience(int amount)
     {
         if (amount <= 0)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(amount),
-                "Experience must be positive.");
+            throw new ArgumentException("Experience must be positive.");
         }
 
         Experience += amount;
 
-        while (Experience >= ExperienceRequiredForNextLevel())
+        Level = (Experience / 1000) + 1;
+
+        Touch();
+    }
+
+    private void SetUsername(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username))
         {
-            Experience -= ExperienceRequiredForNextLevel();
-            Level++;
+            throw new ArgumentException("Username is required.");
         }
+
+        Username = username.Trim();
     }
-    public void LevelUp()
+
+    private void SetEmail(string email)
     {
-        Level++;
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            throw new ArgumentException("Email is required.");
+        }
+
+        Email = email.Trim().ToLowerInvariant();
     }
-    private int ExperienceRequiredForNextLevel()
+
+    private void Touch()
     {
-        return Level * 100;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

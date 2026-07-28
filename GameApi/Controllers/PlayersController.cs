@@ -1,4 +1,5 @@
 ﻿using GameApi.DTOs.Players;
+using GameApi.Models;
 using GameApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,23 +17,23 @@ public class PlayersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers()
+    public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers([FromQuery] PlayerQueryParameters query)
     {
-        var players = await _playerService.GetAllAsync();
+        var players = await _playerService.GetAllAsync(query);
 
         return Ok(players);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto dto)
-    {
-        var player = await _playerService.CreateAsync(dto);
+    //[HttpPost]
+    //public async Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerDto dto)
+    //{
+    //    var player = await _playerService.CreateAsync(dto);
 
-        return CreatedAtAction(
-            nameof(GetPlayers),
-            new { id = player.Id },
-            player);
-    }
+    //    return CreatedAtAction(
+    //        nameof(GetPlayers),
+    //        new { id = player.Id },
+    //        player);
+    //}
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<PlayerDto>> GetPlayer(Guid id)
     {
@@ -53,5 +54,12 @@ public class PlayersController : ControllerBase
         var player = await _playerService.UpdateAsync(id, dto);
 
         return Ok(player);
+    }
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _playerService.DeleteAsync(id);
+
+        return NoContent();
     }
 }

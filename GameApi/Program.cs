@@ -1,7 +1,6 @@
 using FluentValidation;
 using GameApi.Data;
 using GameApi.Handlers;
-using GameApi.Middleware;
 using GameApi.Repositories.Implementations;
 using GameApi.Repositories.Interfaces;
 using GameApi.Services.Implementations;
@@ -36,6 +35,10 @@ builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

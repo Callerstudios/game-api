@@ -3,5 +3,7 @@
 public record PlayerDto(
     Guid Id,
     string Username,
-    int Level
+    string Email,
+    int Level,
+    int Experience
 );

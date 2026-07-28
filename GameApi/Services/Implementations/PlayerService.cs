@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using GameApi.Common;
 using GameApi.DTOs.Players;
 using GameApi.Exceptions.ConflictException;
 using GameApi.Exceptions.NotFoundException;
@@ -14,45 +15,46 @@ public class PlayerService : IPlayerService
     private readonly IPlayerRepository _playerRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IValidator<CreatePlayerDto> _createValidator;
+    //private readonly IValidator<CreatePlayerDto> _createValidator;
     private readonly IValidator<UpdatePlayerDto> _updateValidator;
 
     public PlayerService(
         IPlayerRepository repository,
         IUnitOfWork unitOfWork,
-        IValidator<CreatePlayerDto> createValidator,
+        //IValidator<CreatePlayerDto> createValidator,
         IValidator<UpdatePlayerDto> updateValidator)
     {
         _playerRepository = repository;
         _unitOfWork = unitOfWork;
-        _createValidator = createValidator;
+        //_createValidator = createValidator;
         _updateValidator = updateValidator;
     }
 
-    public async Task<IEnumerable<PlayerDto>> GetAllAsync()
+    public async Task<PagedResponse<PlayerDto>> GetAllAsync(
+    PlayerQueryParameters query)
     {
-        var players = await _playerRepository.GetAllAsync();
+        var result = await _playerRepository.GetAllAsync(query);
 
-        return players.Select(PlayerMappings.ToDto);
+        return new PagedResponse<PlayerDto>([..result.Items.Select(player => player.ToDto())], query.Page, query.PageSize, result.TotalCount);
     }
 
-    public async Task<PlayerDto> CreateAsync(CreatePlayerDto dto)
-    {
-        await _createValidator.ValidateAndThrowAsync(dto);
+    //public async Task<PlayerDto> CreateAsync(CreatePlayerDto dto)
+    //{
+    //    await _createValidator.ValidateAndThrowAsync(dto);
 
-        if (await _playerRepository.ExistsAsync(dto.Username))
-        {
-            throw new DuplicateUsernameException(dto.Username);
-        }
+    //    if (await _playerRepository.ExistsAsync(dto.Username))
+    //    {
+    //        throw new DuplicateUsernameException(dto.Username);
+    //    }
 
-        var player = new Player(dto.Username);
+    //    var player = new Player(dto.Username, dto.Email, string.Empty);
 
-        await _playerRepository.AddAsync(player);
+    //    await _playerRepository.AddAsync(player);
 
-        await _unitOfWork.SaveChangesAsync();
+    //    await _unitOfWork.SaveChangesAsync();
 
-        return player.ToDto();
-    }
+    //    return player.ToDto();
+    //}
     public async Task<PlayerDto> UpdateAsync(
     Guid id,
     UpdatePlayerDto dto)
@@ -87,6 +89,19 @@ public class PlayerService : IPlayerService
         }
 
         return player.ToDto();
+    }
+    public async Task DeleteAsync(Guid id)
+    {
+        var player = await _playerRepository.GetByIdAsync(id);
+
+        if (player is null)
+        {
+            throw new PlayerNotFoundException(id);
+        }
+
+        _playerRepository.Delete(player);
+
+        await _unitOfWork.SaveChangesAsync();
     }
 
     //private static PlayerDto MapToDto(Player player)
