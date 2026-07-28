@@ -1,5 +1,5 @@
 ﻿namespace GameApi.Services.Models;
 
-public record LoginToken(
+public record AccessTokenResult(
     string AccessToken,
     DateTime ExpiresAt);

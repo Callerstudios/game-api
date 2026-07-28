@@ -10,7 +10,9 @@ namespace GameApi.Mappings
             return new PlayerDto(
                 player.Id,
                 player.Username,
-                player.Level
+                player.Email,
+                player.Level,
+                player.Experience
             );
         }
     }

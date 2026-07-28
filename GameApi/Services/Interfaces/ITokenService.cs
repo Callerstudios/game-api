@@ -5,5 +5,5 @@ namespace GameApi.Services.Interfaces;
 
 public interface ITokenService
 {
-    LoginToken Generate(Player player);
+    AccessTokenResult Generate(Player player);
 }

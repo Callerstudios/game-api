@@ -2,6 +2,7 @@
 using GameApi.Models;
 using GameApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameApi.Controllers;
 
@@ -16,6 +17,7 @@ public class PlayersController : ControllerBase
         _playerService = playerService;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers([FromQuery] PlayerQueryParameters query)
     {
@@ -46,6 +48,7 @@ public class PlayersController : ControllerBase
 
         return Ok(player);
     }
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<PlayerDto>> Update(
     Guid id,

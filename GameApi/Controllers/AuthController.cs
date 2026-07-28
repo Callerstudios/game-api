@@ -1,5 +1,4 @@
 ﻿using GameApi.DTOs.Auth;
-using GameApi.Models;
 using GameApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +25,7 @@ public class AuthController : ControllerBase
 
         return CreatedAtAction(
             nameof(PlayersController.GetPlayer),
-            nameof(PlayersController),
+            "Players",
             new { id = playerId },
             null);
     }
