@@ -17,7 +17,7 @@ public class PlayersController : ControllerBase
         _playerService = playerService;
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PlayerDto>>> GetPlayers([FromQuery] PlayerQueryParameters query)
     {
@@ -36,6 +36,7 @@ public class PlayersController : ControllerBase
     //        new { id = player.Id },
     //        player);
     //}
+    [Authorize]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<PlayerDto>> GetPlayer(Guid id)
     {
