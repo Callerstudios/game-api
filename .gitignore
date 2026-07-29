@@ -1,22 +1,33 @@
 # Build output
 bin/
 obj/
+out/
+publish/
 
 # Visual Studio
 .vs/
-
-# User-specific files
 *.user
 *.suo
 
-# Visual Studio Code
+# VS Code
 .vscode/
 
 # Rider
 .idea/
 
-# Development settings
+# Development configuration
 appsettings.Development.json
-
-# Environment files
 .env
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
