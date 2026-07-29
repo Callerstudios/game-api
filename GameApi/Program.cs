@@ -6,10 +6,12 @@ using GameApi.Repositories.Interfaces;
 using GameApi.Services.Implementations;
 using GameApi.Services.Interfaces;
 using GameApi.Validators;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Scalar.AspNetCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,56 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new OpenApiComponents();
+
+        document.Components.SecuritySchemes ??=
+            new Dictionary<string, IOpenApiSecurityScheme>();
+
+        document.Components.SecuritySchemes["Bearer"] =
+            new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Description = "Enter your JWT token."
+            };
+
+        return Task.CompletedTask;
+    });
+    options.AddOperationTransformer((operation, context, cancellationToken) =>
+    {
+        var requiresAuthorization =
+            context.Description.ActionDescriptor.EndpointMetadata
+                .OfType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>()
+                .Any();
+
+        if (!requiresAuthorization)
+        {
+            return Task.CompletedTask;
+        }
+
+        operation.Security ??= new List<OpenApiSecurityRequirement>();
+
+        operation.Security.Add(
+    new OpenApiSecurityRequirement
+    {
+        [
+            new OpenApiSecuritySchemeReference(
+                "Bearer",
+                context.Document,
+                "Bearer")
+        ] = new List<string>()
+    });
+
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddProblemDetails(options =>
 {
@@ -98,6 +149,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    app.MapScalarApiReference();
 }
 
 app.UseExceptionHandler();

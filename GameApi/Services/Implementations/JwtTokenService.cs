@@ -1,5 +1,4 @@
-﻿using GameApi.Configuration;
-using GameApi.Models;
+﻿using GameApi.Models;
 using GameApi.Services.Interfaces;
 using GameApi.Services.Models;
 using Microsoft.Extensions.Options;

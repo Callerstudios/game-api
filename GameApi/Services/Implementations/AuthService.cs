@@ -57,9 +57,15 @@ public class AuthService : IAuthService
 
         var token = _tokenService.Generate(player);
 
+        var user = new AuthenticatedUserDto(
+        player.Id,
+        player.Username,
+        player.Email);
+
         return new LoginResponseDto(
             token.AccessToken,
-            token.ExpiresAt);
+            token.ExpiresAt,
+            user);
     }
 
     public async Task<Guid> RegisterAsync(RegisterDto dto)

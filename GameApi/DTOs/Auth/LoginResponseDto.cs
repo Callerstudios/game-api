@@ -2,5 +2,6 @@
 
 public record LoginResponseDto(
     string AccessToken,
-    DateTime ExpiresAt
+    DateTime ExpiresAt,
+    AuthenticatedUserDto User
 );

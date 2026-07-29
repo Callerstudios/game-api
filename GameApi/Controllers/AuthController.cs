@@ -1,6 +1,8 @@
 ﻿using GameApi.DTOs.Auth;
 using GameApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GameApi.Controllers;
 
@@ -37,5 +39,16 @@ public class AuthController : ControllerBase
         var response = await _authService.LoginAsync(dto);
 
         return Ok(response);
+    }
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult Me()
+    {
+        return Ok(new
+        {
+            Id = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            Username = User.FindFirstValue(ClaimTypes.Name),
+            Email = User.FindFirstValue(ClaimTypes.Email)
+        });
     }
 }
